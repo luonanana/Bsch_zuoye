@@ -6,10 +6,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 public enum GradeEnum {
-    GRADE100("幼托",100),
+   /* GRADE100("幼托",100),
     GRADE101("幼小",101),
     GRADE102("幼中",102),
-    GRADE103("幼大",103),
+    GRADE103("幼大",103),*/
     GRADE1("小学一年级",1),
     GRADE2("小学二年级",2),
     GRADE3("小学三年级",3),

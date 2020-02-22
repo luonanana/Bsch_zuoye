@@ -35,7 +35,7 @@ public class Explain {
     private Integer gradeId;//年级ID
 
     @Column(name = "subject_id")
-    private Integer subjectId;//学科ID
+    private String subjectId;//学科ID
 
     @Column(name = "chapter_id")
     private Integer chapterId;//知识章节ID

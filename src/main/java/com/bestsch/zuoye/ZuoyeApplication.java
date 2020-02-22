@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 
 
 @SpringBootApplication
-//@EnableBschSso
+@EnableBschSso
 @EnableBschApiStd
 @ServletComponentScan
 public class ZuoyeApplication {

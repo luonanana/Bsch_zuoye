@@ -28,7 +28,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(Config.MOBILEAPI_PATH)
-public class UserZuoyeController extends BaseController {
+public class MobUserZuoyeController extends BaseController {
     @Autowired
     private IZuoyeService zuoyeService;
     @Autowired

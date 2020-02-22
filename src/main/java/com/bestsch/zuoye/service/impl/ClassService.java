@@ -125,23 +125,53 @@ public class ClassService {
         return classList;
 
     }
-    public List<Map<String, Object>> getClassInfo() {
+
+    /**
+     * 获取全部学科
+     *
+     * @return
+     */
+    public Object getAllSubject() {
         //http://schd.bestsch.com/oapi/SubInfo/getAllSubject
         String resultData = DHttp.get(
                 BSCH_SCHBASE_HOST + "/oapi/SubInfo/getAllSubject");
         JSONArray jsonArray = JSONArray.fromObject(resultData);
-        List<Map<String, Object>> classList = new ArrayList<>();
-        if (jsonArray.size() != 0) {
-            for (Object obj : jsonArray) {
-                Map<String, Object> cla = new HashMap<>();
-                JSONObject jsonObject = JSONObject.fromObject(obj);
-                cla.put("classId", (Integer) jsonObject.get("UserClassID"));
-                cla.put("className", jsonObject.get("GradeName") + ((String) jsonObject.get("ClassName")));
-                classList.add(cla);
+        return jsonArray;
+
+    }
+
+    public Object getChapter(String subId, Integer schId, Integer gradeId, Integer term) {
+        //  http://learn.bestsch.com/ziyuan/api/GetTree?grade=11&subject=sub02&school=769&schyear=2020&term=1
+        List<Map<String, Object>> list = new ArrayList<>();
+        StringBuilder url = new StringBuilder()
+                .append("http://learn.bestsch.com/ziyuan/api/GetTree");
+        StringBuilder paramStr = new StringBuilder()
+                .append("grade=").append(gradeId)
+                .append("&").append("subject=").append(subId)
+                .append("&").append("school=").append(schId)
+              //  .append("&").append("schyear=").append(2020)
+                .append("&").append("term=").append(term);
+
+        String res = DHttp.post(url.toString(), paramStr.toString().getBytes());
+        JSONObject jsonObject = JSONObject.fromObject(res);
+        Object result = jsonObject.get("tree");
+        if(!result.equals("null")) {
+            Map<String, Object> tree = (Map<String, Object>) jsonObject.get("tree");
+            JSONArray jsonArray = (JSONArray) tree.get("child");
+
+            if (jsonArray != null && jsonArray.size() > 0) {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    Map map = new HashMap();
+                    JSONObject o = (JSONObject) jsonArray.get(i);
+                    String name = (String) o.get("name");
+                    Integer id = (Integer) o.get("id");
+                    map.put("name", name);
+                    map.put("id", id);
+                    list.add(map);
+                }
             }
         }
-        return classList;
-
+        return list;
     }
 
 
