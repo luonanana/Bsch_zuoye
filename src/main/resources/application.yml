@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      max-file-size: 100MB # 单个文件大小
+      max-request-size: 100MB # 设置总上传的数据大小
+      enabled: true #开启
+  data:
+    redis:
+      repositories:
+        enabled: false
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/bsch_zuoye?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root123456
+    driver-class-name: com.mysql.jdbc.Driver
+    min-idle: 30
+    max-active: 30
+  #jpa
+  jpa:
+    database: MySQL
+    show-sql: true
+    hibernate:
+      # 生产环境设置成 none，避免程序运行时自动更新数据库结构
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      open-in-view: true
+#  redis:
+#    database: 0
+#    host: 127.0.0.1
+#    port: 6379
+#    password:
+#    timeout: 5000
+
+#单点登录
+bsch:
+  sso:
+    server-url-prefix: http://ssodebug.bestsch.com
+    client-host-url: http://localhost:8080
+    #    client-host-url: http://basedebug.bestsch.com
+    allow-headers: all
+    allow-origins: all
+    url-pattern: /api/*
+    ignore-pattern: /mobileapi/*
+  open:
+    base-host: http://basedebug.bestsch.com
+    app-key: 100273
+    app-secret: aafe86d59134484e962db63ef4f6b327
+    schbase-host: http://schd.bestsch.com
+    homelx-host: http://debughomelx.hongyucloud.com
+
+FILE_PATH: /Users/luona/Downloads/
+FILE_WEB_PATH: /Users/luona/Downloads/
+
+
