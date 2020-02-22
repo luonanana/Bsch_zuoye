@@ -48,7 +48,7 @@ public class SysController {
     public Object getTeaClasses(BoaUser authUserWithDept) {
         List<Map<String, Object>> teaClasses = classService.getTeaClasses(authUserWithDept.getId());
         for (Map map : teaClasses) {
-            Integer id = (Integer) map.get("id");
+            Integer id = (Integer) map.get("classId");
             JSONArray jsonArray = JSONArray.fromObject(classService.getClassStuInfos(id));
             map.put("students", jsonArray);
         }
@@ -87,7 +87,7 @@ public class SysController {
         }
         Integer graId=Integer.parseInt(gradeId);
         Integer term=Integer.parseInt(termStr);
-        return   classService.getChapter(subjectId,769,graId,term);
+        return   classService.getChapter(subjectId,schId,graId,term);
     }
 
 }
