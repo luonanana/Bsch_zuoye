@@ -5,6 +5,7 @@ import com.bestsch.zuoye.dao.UserZuoyeRepository;
 import com.bestsch.zuoye.dao.ZuoyeObjectRepository;
 import com.bestsch.zuoye.dao.ZuoyeQestionRepository;
 import com.bestsch.zuoye.dao.ZuoyeRepository;
+import com.bestsch.zuoye.entity.UserClass;
 import com.bestsch.zuoye.enums.ZuoyeType;
 import com.bestsch.zuoye.mem.GroupType;
 import com.bestsch.zuoye.model.UserZuoye;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ZuoyeService implements IZuoyeService {
@@ -40,7 +42,7 @@ public class ZuoyeService implements IZuoyeService {
     private ZuoyeQestionRepository zuoyeQestionRepository;
 
     @Override
-    public ZuoYe save(ZuoYe zuoye, List<Integer> classIds, List<Integer> stuIds) {
+    public ZuoYe save(ZuoYe zuoye) {
         //1.先存作业
         zuoye = zuoyeRepository.save(zuoye);
         Integer zuoyeId = zuoye.getId();
@@ -59,28 +61,36 @@ public class ZuoyeService implements IZuoyeService {
             //2.存作业题目
             zuoyeQestionRepository.saveAll(qestionList);
         }
+        return zuoye;
+    }
 
+    @Override
+    public ZuoYe save(ZuoYe zuoye, List<UserClass> userClasses) {
+        Integer zuoyeId = zuoye.getId();
         List<ZuoyeObject> zyObjList = new ArrayList<>();
-        if (classIds != null && classIds.size() != 0) {//区分教师发布班级还是某人
-            for (Integer groupId : classIds) {
+        List<Integer> stuIds = userClasses.stream().map(UserClass::getUserId).collect(Collectors.toList());
+        if(stuIds!=null&&stuIds.size()>0){
+            for(UserClass uc:userClasses){//区分教师发布对象为学生
+                Integer classId = uc.getClassId();
+                Integer userId = uc.getUserId();
                 ZuoyeObject zuoyeObject = new ZuoyeObject();
-                zuoyeObject.setClaId(groupId);
+                zuoyeObject.setClaId(classId);
+                zuoyeObject.setStuId(userId);
                 zuoyeObject.setZuoyeId(zuoyeId);
                 zyObjList.add(zuoyeObject);
             }
-        } else {
-            if (stuIds != null && stuIds.size() != 0) {
-                for (Integer groupId : stuIds) {
-                    ZuoyeObject zuoyeObject = new ZuoyeObject();
-                    zuoyeObject.setStuId(groupId);
-                    zuoyeObject.setZuoyeId(zuoyeId);
-                    zyObjList.add(zuoyeObject);
-                }
+        }else{
+            for(UserClass uc:userClasses){//发布对象为班级
+                Integer classId = uc.getClassId();
+                ZuoyeObject zuoyeObject = new ZuoyeObject();
+                zuoyeObject.setClaId(classId);
+                zuoyeObject.setZuoyeId(zuoyeId);
+                zyObjList.add(zuoyeObject);
             }
         }
         List<ZuoyeObject> objects = zuoyeObjectRepository.findByZuoyeId(zuoyeId);
         if (objects != null && objects.size() > 0) zuoyeObjectRepository.deleteAll(objects);
-        //3.存作业对象
+        //存作业对象
         zuoyeObjectRepository.saveAll(zyObjList);
         return zuoye;
     }

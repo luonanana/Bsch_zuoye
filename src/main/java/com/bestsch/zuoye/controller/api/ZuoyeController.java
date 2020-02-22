@@ -9,6 +9,7 @@ import com.bestsch.utils.ErrorCode;
 import com.bestsch.zuoye.config.Config;
 import com.bestsch.zuoye.controller.BaseController;
 import com.bestsch.zuoye.entity.Page;
+import com.bestsch.zuoye.entity.UserClass;
 import com.bestsch.zuoye.model.UserAnswer;
 import com.bestsch.zuoye.model.ZuoYe;
 import com.bestsch.zuoye.model.ZuoyeObject;
@@ -70,10 +71,10 @@ public class ZuoyeController extends BaseController {
         if (zuoyeQestionList != null && zuoyeQestionList.size() != 0) {
             for (ZuoyeQestion zuoyeQestion : zuoyeQestionList) {
                 String[] split = zuoyeQestion.getFileName().split(",");
-                StringBuffer sb=new StringBuffer();
+                StringBuffer sb = new StringBuffer();
                 for (String fielName : split) {
                     if (!StringUtils.isEmpty(fielName)) {
-                        sb.append( FILE_WEB_PATH + "zuoyeFile/" + fielName+",");
+                        sb.append(FILE_WEB_PATH + "zuoyeFile/" + fielName + ",");
                     }
                 }
                 zuoyeQestion.setFileName(sb.toString());
@@ -82,14 +83,15 @@ public class ZuoyeController extends BaseController {
         return zuoye;
     }
 
+    //保存文件
     @PostMapping(value = "SaveZuoye")
-    public ZuoYe SaveZuoye(BoaUser authUser,ZuoYe zuoye,@RequestParam(value = "classIds",required = false) List<Integer> classIds,  @RequestParam(value = "stuIds",required = false) List<Integer> stuIds,@RequestParam("file") MultipartFile[] files) {
+    public ZuoYe SaveZuoye(BoaUser authUser, ZuoYe zuoye, @RequestParam("file") MultipartFile[] files) {
         if (files.length == 0) throw new DException("请选择要上传的文件");
         Integer zuoyeId = zuoye.getId();
-        if(zuoyeId!=null){
+        if (zuoyeId != null) {
             List<ZuoyeQestion> zuoyeQestionList = zuoyeQestionService.findByZuoyeId(zuoyeId);
-            if(zuoyeQestionList!=null&&zuoyeQestionList.size()>0){
-                for(ZuoyeQestion zuoyeQestion:zuoyeQestionList) {
+            if (zuoyeQestionList != null && zuoyeQestionList.size() > 0) {
+                for (ZuoyeQestion zuoyeQestion : zuoyeQestionList) {
                     String[] split = zuoyeQestion.getFileName().split(",");
                     //查询源文件，并删除
                     for (String fielame : split) {
@@ -99,17 +101,17 @@ public class ZuoyeController extends BaseController {
                 }
 
             }
-        }else{
+        } else {
             zuoye.setCId(authUser.getId());
             zuoye.setCName(authUser.getName());
             zuoye.setCDate(new Date());
         }
         if (files.length > 0) {
-            StringBuffer sb=new StringBuffer();
+            StringBuffer sb = new StringBuffer();
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     String fileName = FileUtil.uploadImg(file, FILE_PATH + "zuoyeFile/");
-                    sb.append(fileName+",");
+                    sb.append(fileName + ",");
                 }
             }
             List<ZuoyeQestion> zuoyeQestions = new ArrayList<>();
@@ -118,18 +120,26 @@ public class ZuoyeController extends BaseController {
             zuoyeQestions.add(zuoyeQestion);
             zuoye.setZuoyeQestionList(zuoyeQestions);
         }
+        zuoye.setStatus(0);
 
-
-        return zuoyeService.save(zuoye,classIds,stuIds);
+        return zuoyeService.save(zuoye);
     }
 
+    //发布作业
+    @PostMapping(value = "FabuZuoye")
+    public ZuoYe FabuZuoye(ZuoYe zuoye, @RequestBody List<UserClass> userClasses) {
+        Integer zuoyeId = zuoye.getId();
+        if (zuoyeId == null) throw new DException("请指定作业");
+        zuoye.setStatus(1);
+        return zuoyeService.save(zuoye, userClasses);
+    }
 
     @PostMapping(value = "SaveZuoye2", produces = "application/json")
-    public ZuoYe SaveZuoye2(BoaUser authUser, @RequestBody ZuoYe zuoye,@RequestParam(value = "classIds",required = false) List<Integer> classIds,  @RequestParam(value = "stuIds",required = false) List<Integer> stuIds) {
+    public ZuoYe SaveZuoye2(BoaUser authUser, @RequestBody ZuoYe zuoye) {
         zuoye.setCId(authUser.getId());
         zuoye.setCName(authUser.getName());
         zuoye.setCDate(new Date());
-        return zuoyeService.save(zuoye,classIds,stuIds);
+        return zuoyeService.save(zuoye);
     }
 
 
@@ -140,8 +150,6 @@ public class ZuoyeController extends BaseController {
         Integer id = Integer.parseInt(idStr);
         zuoyeService.delete(id);
     }
-
-
 
 
 }

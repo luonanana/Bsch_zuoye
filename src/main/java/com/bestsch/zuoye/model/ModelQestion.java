@@ -47,9 +47,6 @@ public class ModelQestion {
     @Column(name = "question_type_id")
     private Integer questionTypeId;
 
-    @OneToOne
-    @JoinColumn(name="question_type_id", insertable = false,updatable = false)
-    private QuestionType questionType;
 
     @Column(name = "order_num")
     private Integer orderNum;

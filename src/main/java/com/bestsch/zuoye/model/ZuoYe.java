@@ -61,6 +61,9 @@ public class ZuoYe {
     @Column(name = "end_date")
     private Date endDate;
 
+    @Column(name = "status")
+    private Integer status;//是否发布 1-已发布 0-未发布
+
     @Column(name = "c_id")
     private Integer cId;
 
@@ -73,8 +76,8 @@ public class ZuoYe {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "zuoye")
     private List<ZuoyeQestion> zuoyeQestionList;
 
-    @Transient
+   /* @Transient
     private Integer state;// 0-已参与， 1-未参与
-
+*/
     public @interface Update{};
 }
